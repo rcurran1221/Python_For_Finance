@@ -39,6 +39,11 @@ def get_max_close(symbol):
     df = pd.read_csv(dataPath+"{}.csv".format(symbol))
     return df["Close"].max()
 
+def plot_close_adjclose(symbol):
+    df = pd.read_csv(dataPath + "{}.csv".format(symbol))
+    df[["Close","Adj Close"]].plot()
+    plt.show()
+
 def test_run():
     df = pd.read_csv(path + "Data\\aapl.csv")
     print(df[10:21])
@@ -55,7 +60,7 @@ def test_run3():
         
 def run():
     for symbol in ['AAPL', 'IBM']:
-        plot_intraday_high(symbol)        
+        plot_close_adjclose(symbol)        
     
 if __name__ == "__main__":
     run()
