@@ -4,7 +4,7 @@ Created on Tue Mar  6 16:09:23 2018
 
 @author: rcurran
 """
-
+import matplotlib.pyplot as plt
 import pandas as pd
 import os
 #where is the data?
@@ -21,8 +21,19 @@ else:
 dataPath = path + "data\\"
 #endregion
 
+#public properties
+symbols = ['AAPL', 'GLD', 'GOOG', 'IBM']
+Start_Date = '2017-01-01'
+End_Date = '2017-12-31'
+Df_Date_Range = pd.date_range(Start_Date, End_Date)
+#endregion
+
 def symbol_to_path(symbol):
     return os.path.join(dataPath, "{}.csv".format(str(symbol)))
+
+def plot_selected(df, columns, start_index, end_index):
+    df = df.ix[start_index : end_index, columns]
+    plot_data(df, title = "Selected prices")
 
 def get_data(symbols, dates):
     df = pd.DataFrame(index = dates)
@@ -40,6 +51,15 @@ def get_data(symbols, dates):
     
     return df
     
+def plot_data(df, title="Stock prices"):
+    ax = df.plot(title=title, fontsize=2)
+    ax.set_xlabel("Date") 
+    ax.set_ylabel("Price")
+    plt.show()
+    
+def normalize_data(df):
+    return df/df.ix[0,:]
+    
 def test_run0():
     start_date = '2016-01-22'
     end_date = '2016-01-28'
@@ -54,7 +74,7 @@ def test_run0():
     #left join is default
     df1 = df1.join(dfSPY, how = 'inner')
     
-    symbols = ['AAPL', 'GLD', 'GOOG', 'IBM'] #, 'SPY']
+     #, 'SPY']
     for symbol in symbols:
         df_temp = pd.read_csv(dataPath + "{}.csv".format(symbol), 
                               index_col = 'Date',
@@ -65,14 +85,28 @@ def test_run0():
         df1 = df1.join(df_temp)
     print(df1)
         
-def test_run():
-    dates = pd.date_range('2017-01-20', '2017-01-28')
+def test_run1():
+    dates = pd.date_range('2017-01-01', '2017-12-31')
     
     symbols = ['GOOG', 'IBM', 'GLD', 'AAPL']
     df = get_data(symbols, dates)
-    print (df)
+    df = df.ix['2010-01-01':'2017-01-31', symbols]
+    df = df/df.ix[0]
+    df.plot()
+    
+def test_run2():
+    df = get_data(symbols, Df_Date_Range)
+    plot_data(df)
         
+def test_run3():
+    plot_selected(get_data(symbols, Df_Date_Range), ['SPY', 'GLD'], Start_Date, End_Date)
+    
+def test_run():
+    df = normalize_data(get_data(symbols, Df_Date_Range))
+    plot_data(df)
+
 if __name__ == "__main__":
     test_run()
+    
     
     #lesson 3 obtaining a slice of data
